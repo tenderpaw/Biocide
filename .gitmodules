@@ -1,0 +1,3 @@
+[submodule "Assets/Social"]
+	path = Assets/Social
+	url = https://github.com/tenderpaw/Social
