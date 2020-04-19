@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using OwlTawitTawoo;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class Level
@@ -11,9 +12,22 @@ public class Level
 
 public class LevelManager : MonoBehaviour
 {
+	public static event UnityAction<int> levelUpdatedEvent;
+
 	[SerializeField] private List<Level> _levels = new List<Level>();
 	[SerializeField] private int _loadTestLevel = -1;
-	public static int level { get; private set; } = 1;
+	private static int _level = 1;
+	public static int level {
+		get
+		{
+			return _level;
+		}
+		private set {
+			_level = value;
+			levelUpdatedEvent?.Invoke(level);
+		}
+
+	}
 
 	private List<Vector2> _spawnPositionList = new List<Vector2>();
 

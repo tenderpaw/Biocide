@@ -10,6 +10,7 @@ public static class EnemyManager
 	static EnemyManager()
 	{
 		Robot.destroyedEvent += Remove;
+		EndPanel.nextLevelStartedEvent += DestroyAll;
 	}
 
 	public static bool hasEnemies

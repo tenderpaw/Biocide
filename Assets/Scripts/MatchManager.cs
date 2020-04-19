@@ -69,7 +69,7 @@ public class MatchManager : MonoBehaviour
 		if (robotCount >= maxMatch)
 			_selectedRobots.Clear();
 
-		bool matchCleared = robotCount >= maxMatch;
+		bool matchCleared = robotCount >= maxMatch && !matchFailed;
 		for (int i = robotCount - 1; i >= 0; i--)
 		{
 			if (matchFailed)
@@ -85,6 +85,8 @@ public class MatchManager : MonoBehaviour
 
 		if (matchCleared)
 			matchClearedEvent?.Invoke();
+		else if (matchFailed)
+			LifeManager.DeductLife();
 	}
 
 	public static void Reset()

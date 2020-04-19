@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using OwlTawitTawoo;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class EndPanel : Panel
@@ -7,6 +8,8 @@ public class EndPanel : Panel
 	[SerializeField] private GameObject _victoryGO;
 	[SerializeField] private GameObject _loseGO;
 	private bool _isVictory = false;
+
+	public static event UnityAction nextLevelStartedEvent;
 
 	private void Awake()
 	{
@@ -47,14 +50,21 @@ public class EndPanel : Panel
 		_loseGO.SetActive(false);
 	}
 
-	public void OnInputGameEnded()
+	public void OnInputNextLevel()
 	{
-		gameEndedEvent?.Invoke();
 		HideResult();
+		nextLevelStartedEvent?.Invoke();
+		StateManager.Set(StateManager.State.Game);
 		Toggle(false);
+	}
 
-		if (!_isVictory)
-			LevelManager.ResetLevel();
+	public void OnInputPlayAgain()
+	{
+		EnemyManager.DestroyAll();
+		LevelManager.ResetLevel();
+		LifeManager.Reset();
+		StateManager.Set(StateManager.State.Game);
+		Toggle(false);
 	}
 
 	private static EndPanel _instance;

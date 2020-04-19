@@ -20,6 +20,7 @@ public class MainMenuPanel : Panel
 			return;
 
 		Toggle(true);
+
     }
 
 	private void InvokeGameEnded()
@@ -30,6 +31,7 @@ public class MainMenuPanel : Panel
 	public void OnInputStartGame()
 	{
 		EnemyManager.DestroyAll();
+		LifeManager.Reset();
 		StateManager.Set(StateManager.State.Game);
 		Toggle(false);
 	}
