@@ -1,15 +1,18 @@
 ﻿using OwlTawitTawoo;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class EndPanel : Panel
 {
 	public static event UnityAction gameEndedEvent;
+	public static event UnityAction nextLevelStartedEvent;
+
+	[SerializeField] private TMP_Text _nexLevelText;
 	[SerializeField] private GameObject _victoryGO;
 	[SerializeField] private GameObject _loseGO;
-	private bool _isVictory = false;
 
-	public static event UnityAction nextLevelStartedEvent;
+	private bool _isVictory = false;
 
 	private void Awake()
 	{
@@ -34,6 +37,7 @@ public class EndPanel : Panel
 
 	private void ShowVictory()
 	{
+		_nexLevelText.text = string.Format("Level {0}", LevelManager.level + 1);
 		_victoryGO.SetActive(true);
 		_loseGO.SetActive(false);
 	}

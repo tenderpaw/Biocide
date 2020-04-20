@@ -12,10 +12,24 @@ public class Level
 
 public class LevelManager : MonoBehaviour
 {
+	const string PREFS_CHECK_POINT = "prefsCheckPoint";
+	const int CHECK_POINT_EVERY_LEVEL = 3;
 	public static event UnityAction<int> levelUpdatedEvent;
 
 	[SerializeField] private List<Level> _levels = new List<Level>();
 	[SerializeField] private int _loadTestLevel = -1;
+
+	public static int checkPointLevel {
+		get {
+			return PlayerPrefs.HasKey(PREFS_CHECK_POINT) ? PlayerPrefs.GetInt(PREFS_CHECK_POINT) : 1;
+		}
+		
+		private set
+		{
+			PlayerPrefs.SetInt(PREFS_CHECK_POINT, value);
+		}
+	} 
+
 	private static int _level = 1;
 	public static int level {
 		get
@@ -61,11 +75,13 @@ public class LevelManager : MonoBehaviour
 	private void LevelUp()
 	{
 		level++;
+		if (level > 0 && level > checkPointLevel && level % CHECK_POINT_EVERY_LEVEL == 0)
+			checkPointLevel = level;
 	}
 
     public static void ResetLevel()
 	{
-		level = 1;
+		level = checkPointLevel;
     }
 
 	private void InvokeStateToGame(StateManager.State gameState)

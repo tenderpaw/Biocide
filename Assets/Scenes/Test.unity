@@ -323,7 +323,7 @@ MonoBehaviour:
       reboot: 0
   - enemyInfoList: []
   - enemyInfoList: []
-  _loadTestLevel: 1
+  _loadTestLevel: -1
 --- !u!1 &713744361
 GameObject:
   m_ObjectHideFlags: 0
@@ -1051,6 +1051,26 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4434460097739278205, guid: eb9d3152c0f750946835bf5f3802aa2a,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162267552259928034, guid: eb9d3152c0f750946835bf5f3802aa2a,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162267552259928034, guid: eb9d3152c0f750946835bf5f3802aa2a,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162267552259928034, guid: eb9d3152c0f750946835bf5f3802aa2a,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7162267552259928034, guid: eb9d3152c0f750946835bf5f3802aa2a,
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 0
