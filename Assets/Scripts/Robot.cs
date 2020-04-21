@@ -13,6 +13,30 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	#endregion
 
+	private GameObject _mGO;
+	public GameObject myGO
+	{
+		get
+		{
+			if (_mGO == null)
+				_mGO = gameObject;
+
+			return _mGO;
+		}
+	}
+
+	private Collider2D _mCollider;
+	public Collider2D myCollider
+	{
+		get
+		{
+			if (_mCollider == null)
+				_mCollider = GetComponent<Collider2D>();
+
+			return _mCollider;
+		}
+	}
+
 	[Header("Stats")]
 	[SerializeField] protected int _hitpoints = 1;
 	public int hitpoints
@@ -136,6 +160,8 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	private void Awake()
 	{
+		LeanTween.alpha(myGO, 0, 0);
+		ToggleCollider(false);
 		Robot.onlineEvent += InvokeOnline;
 		Robot.offlineEvent += InvokeOffline;
 		MatchManager.matchClearedEvent += SetSelectable;
@@ -175,13 +201,13 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		movementInfo.movementType = enemyInfo.movementType;
 		if (movementInfo.movementType != Movement.MovementType.None)
 		{
-			movePattern = Movement.Create(gameObject, movementInfo);
-			movePattern.Init(gameObject);
+			movePattern = Movement.Create(myGO, movementInfo);
+			movePattern.Init(myGO);
 		}
 
-		ChangeColor();
-		Online(false);
 		_healthList = GetComponentsInChildren<Health>();
+		ChangeColor();
+		SpawnSequence();
 	}
 
 	protected IEnumerator _changeColourCoroutine;
@@ -226,7 +252,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		offline = false;
 		StartChangeColor();
 		SetSelectable();
-		LeanTween.scale(gameObject, Vector3.one, 0.25f);
+		LeanTween.scale(myGO, Vector3.one, 0.25f);
 	}
 
 	public void Offline(bool broadcast = true)
@@ -241,7 +267,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		SetSelectable();
 		StopColorChange();
 
-		LeanTween.scale(gameObject, Vector3.one * 0.8f, 0.25f);
+		LeanTween.scale(myGO, Vector3.one * 0.8f, 0.25f);
 		if (_reboot != null)
 			_reboot.Activate();
 	}
@@ -265,7 +291,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		if (isDead)
 		{
 			destroyedEvent?.Invoke(this);
-			Destroy(gameObject);
+			DeathSequence();
 
 		} else
 		{
@@ -280,6 +306,46 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 			Online();
 		}
+	}
+
+	private void SpawnSequence()
+	{
+		LTSeq alphaSeq = LeanTween.sequence();
+		alphaSeq.append(0.01f);
+		alphaSeq.append(LeanTween.alpha(myGO, 1, 0.4f));
+
+		float scaleTime = 0.1f;
+		LTSeq tweenSeq = LeanTween.sequence();
+		tweenSeq.append(0.01f);
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 1, scaleTime));
+		tweenSeq.append(() =>
+		{
+			ToggleCollider(true);
+			Online(false);
+		});
+	}
+
+	private void DeathSequence()
+	{
+		float scaleTime = 0.1f;
+		LeanTween.alpha(myGO, 0, 0.4f);
+		LTSeq tweenSeq = LeanTween.sequence();
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one, scaleTime));
+		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
+		tweenSeq.append(() =>
+		{
+			Destroy(myGO);
+		});
+	}
+
+	public void ToggleCollider(bool e)
+	{
+		myCollider.enabled = e;
 	}
 
 	public void SetSelectable()

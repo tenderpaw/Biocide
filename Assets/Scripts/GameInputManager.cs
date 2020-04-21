@@ -50,7 +50,7 @@ public class GameInputManager : MonoBehaviour
 			if (raycastHit2D)
 			{
 				IInGameInteractable interactable = raycastHit2D.transform.GetComponent<IInGameInteractable>();
-				interactable.Interact();
+				interactable?.Interact();
 			}
 		}
 	}

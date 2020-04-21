@@ -47,6 +47,11 @@ public class LevelManager : MonoBehaviour
 
 	private void Awake()
 	{
+		if (_loadTestLevel > 0)
+			level = _loadTestLevel;
+		else
+			level = checkPointLevel;
+
 		for (int x = -2; x <= 2; x++)
 		{
 			for (int y = -4; y <= 4; y++)
@@ -54,11 +59,6 @@ public class LevelManager : MonoBehaviour
 				_spawnPositionList.Add(new Vector2(x, y));
 			}
 		}
-
-		if (_loadTestLevel > 0)
-			level = _loadTestLevel;
-		else
-			level = 1;
 
 		MatchManager.matchClearedEvent += CheckMissing;
 		StateManager.stateChangedEvent += InvokeStateToGame;
