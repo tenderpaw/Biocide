@@ -323,7 +323,7 @@ MonoBehaviour:
       reboot: 0
   - enemyInfoList: []
   - enemyInfoList: []
-  _loadTestLevel: -1
+  _loadTestLevel: 6
 --- !u!1 &713744361
 GameObject:
   m_ObjectHideFlags: 0
