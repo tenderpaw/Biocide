@@ -160,7 +160,6 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	private void Awake()
 	{
-		LeanTween.alpha(myGO, 0, 0);
 		ToggleCollider(false);
 		Robot.onlineEvent += InvokeOnline;
 		Robot.offlineEvent += InvokeOffline;
@@ -188,7 +187,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	}
 
 	protected EnemyInfo enemyInfo;
-	public void Init(EnemyInfo enemyInfo)
+	public void Init(EnemyInfo enemyInfo, Vector3 spawnPosition)
 	{
 		this.enemyInfo = enemyInfo;
 		hitpoints = enemyInfo.health;
@@ -206,8 +205,10 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		}
 
 		_healthList = GetComponentsInChildren<Health>();
+
 		ChangeColor();
-		SpawnSequence();
+		SetSelectable(true);
+		SpawnSequence(spawnPosition);
 	}
 
 	protected IEnumerator _changeColourCoroutine;
@@ -308,20 +309,16 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		}
 	}
 
-	private void SpawnSequence()
+	private void SpawnSequence(Vector3 spawnPosition)
 	{
 		LTSeq alphaSeq = LeanTween.sequence();
-		alphaSeq.append(0.01f);
+		alphaSeq.append(LeanTween.alpha(myGO, 0, 0));
+		alphaSeq.append(() =>
+		{
+			_myTF.position = spawnPosition;
+		});
 		alphaSeq.append(LeanTween.alpha(myGO, 1, 0.4f));
-
-		float scaleTime = 0.1f;
-		LTSeq tweenSeq = LeanTween.sequence();
-		tweenSeq.append(0.01f);
-		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
-		tweenSeq.append(LeanTween.scale(myGO, Vector3.one, scaleTime));
-		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 0.8f, scaleTime));
-		tweenSeq.append(LeanTween.scale(myGO, Vector3.one * 1, scaleTime));
-		tweenSeq.append(() =>
+		alphaSeq.append(() =>
 		{
 			ToggleCollider(true);
 			Online(false);
@@ -353,9 +350,19 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		ToggleSelectable(selectable);
 	}
 
-	public void ToggleSelectable(bool sel)
+	private void SetSelectable(bool force)
 	{
-		if (offline)
+		ToggleSelectable(selectable, force);
+	}
+
+	public void Toggle(bool e)
+	{
+		myGO.SetActive(e);
+	}
+
+	public void ToggleSelectable(bool sel, bool force = false)
+	{
+		if (offline && !force)
 			return;
 
 		_blockerGO.SetActive(!sel);

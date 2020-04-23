@@ -26,7 +26,7 @@ public class EnemyAssembler : MonoBehaviour
 
 	public Robot Spawn(EnemyInfo enemyInfo, Vector2 spawnPosition = default(Vector2))
 	{
-		GameObject bodyGO = Instantiate(_bodyPrefabGO, spawnPosition, Quaternion.identity, transform);
+		GameObject bodyGO = Instantiate(_bodyPrefabGO, Vector3.one * 1000, Quaternion.identity, transform);
 		Transform bodyTF = bodyGO.transform;
 		int partsCount = 0;
 
@@ -112,7 +112,7 @@ public class EnemyAssembler : MonoBehaviour
 		}
 
 		Robot robot = bodyGO.GetComponent<Robot>();
-		robot.Init(enemyInfo);
+		robot.Init(enemyInfo, spawnPosition);
 		return robot;
 	}
 
