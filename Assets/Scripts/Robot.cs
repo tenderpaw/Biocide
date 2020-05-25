@@ -301,15 +301,15 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	private void ChangeColor(Color color)
 	{
-		//for (int i = 0; i < _spriteRenderers.Length; i++)
-		//{
-		//	if (!_selectableCollider.enabled)
-		//		_spriteRenderers[i].color = Color.black;
-		//	else
-		//		_spriteRenderers[i].color = color;
+		for (int i = 0; i < _spriteRenderers.Length; i++)
+		{
+			if (!_selectableCollider.enabled)
+				_spriteRenderers[i].color = Color.black;
+			else
+				_spriteRenderers[i].color = color;
 
-		//}
-		_mySpriteRenderer.color = color;
+		}
+		//_mySpriteRenderer.color = color;
 	}
 
 	public void ApplyDamage()
