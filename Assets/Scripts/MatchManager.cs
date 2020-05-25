@@ -91,12 +91,14 @@ public class MatchManager : MonoBehaviour
 
 	public static void Reset()
 	{
-		for (int i = 0; i < instance._selectedRobots.Count; i++)
+		List<Robot> selected = new List<Robot>(instance._selectedRobots);
+		instance._selectedRobots.Clear();
+		for (int i = 0; i < selected.Count; i++)
 		{
-			instance._selectedRobots[i].Online(false);
+			selected[i].Online(false);
 		}
 
-		instance._selectedRobots.Clear();
+		matchClearedEvent?.Invoke();
 	}
 
 	private void RobotInvokeOnline(Robot robot)

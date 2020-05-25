@@ -24,7 +24,7 @@ public class EnemyAssembler : MonoBehaviour
 
 	[SerializeField] private int _minNumOfParts = 8;
 
-	public Robot Spawn(EnemyInfo enemyInfo, Vector2 spawnPosition = default(Vector2))
+	public Robot Spawn(EnemyInfo enemyInfo, Vector2 spawnPosition = default(Vector2), int sortingOrder = 0)
 	{
 		GameObject bodyGO = Instantiate(_bodyPrefabGO, Vector3.one * 1000, Quaternion.identity, transform);
 		Transform bodyTF = bodyGO.transform;
@@ -112,11 +112,11 @@ public class EnemyAssembler : MonoBehaviour
 		}
 
 		Robot robot = bodyGO.GetComponent<Robot>();
-		robot.Init(enemyInfo, spawnPosition);
+		robot.Init(enemyInfo, spawnPosition, sortingOrder++ * 3);
 		return robot;
 	}
 
-	private Vector2 GetPointsFromAngle(float angle, float distance = 0.65f)
+	private Vector2 GetPointsFromAngle(float angle, float distance = 0.58f)
 	{
 		angle *= Mathf.PI / 180;
 		return new Vector2(distance * Mathf.Cos(angle), distance * Mathf.Sin(angle));

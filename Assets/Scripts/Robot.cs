@@ -38,7 +38,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	}
 
 	[Header("Stats")]
-	[SerializeField] protected int _hitpoints = 1;
+	[SerializeField] private int _hitpoints = 1;
 	public int hitpoints
 	{
 		get
@@ -46,16 +46,16 @@ public class Robot : MonoBehaviour, IInGameInteractable
 			return _hitpoints;
 		}
 
-		protected set
+		private set
 		{
 			_hitpoints = value;
 		}
 	}
 
-	protected Health[] _healthList;
+	private Health[] _healthList;
 
-	[SerializeField] protected float _colourChangeInterval = 1;
-	[SerializeField] protected int _unselectableOfflineCount = -1;
+	[SerializeField] private float _colourChangeInterval = 1;
+	[SerializeField] private int _unselectableOfflineCount = -1;
 	public int unselectableOfflineCount
 	{
 		get
@@ -73,7 +73,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	}
 
 	private Transform _mTF;
-	protected Transform _myTF
+	private Transform _myTF
 	{
 		get
 		{
@@ -85,16 +85,17 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	[SerializeField]
 	private float _rotateSpeed = 5;
+	private Vector3 _rotation = Vector3.forward;
 
 	[Header("Abilities")]
 	[SerializeField]
-	protected Reboot _reboot = new Reboot();
+	private Reboot _reboot;
 
 	[Space]
 	[Space]
 
 	[SerializeField]
-	protected List<Color> _colors = new List<Color>
+	private List<Color> _colors = new List<Color>
 	{
 		Color.red,
 		Color.blue,
@@ -103,13 +104,13 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	};
 
 	[SerializeField]
-	protected Collider2D _selectableCollider;
+	private Collider2D _selectableCollider;
 	[SerializeField]
-	protected GameObject _blockerGO;
+	private GameObject _blockerGO;
 
 	[SerializeField]
-	protected int _cIndex = 0;
-	protected int _colorIndex
+	private int _cIndex = 0;
+	private int _colorIndex
 	{
 		get
 		{
@@ -132,21 +133,35 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		}
 	}
 
-	protected SpriteRenderer _sRenderer;
-	protected SpriteRenderer _mySpriteRenderer
+	private SpriteRenderer[] _sRenderers;
+	private SpriteRenderer[] _spriteRenderers
+	{
+		get
+		{
+			if (_sRenderers == null)
+			{
+				_sRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+			}
+			return _sRenderers;
+		}
+	}
+
+	private SpriteRenderer _sRenderer;
+	private SpriteRenderer _mySpriteRenderer
 	{
 		get
 		{
 			if (_sRenderer == null)
 			{
 				_sRenderer = transform.Find("Model/Color").GetComponent<SpriteRenderer>();
+				//_sRenderer = transform.Find("Model").GetComponent<SpriteRenderer>();
 			}
 			return _sRenderer;
 		}
 	}
 
 	[SerializeField]
-	protected Movement.MovementData movementInfo;
+	private Movement.MovementData movementInfo;
 	public Movement movePattern { get; private set; }
 
 	public bool offline { get; private set; } = true;
@@ -186,9 +201,10 @@ public class Robot : MonoBehaviour, IInGameInteractable
 			SetSelectable();
 	}
 
-	protected EnemyInfo enemyInfo;
-	public void Init(EnemyInfo enemyInfo, Vector3 spawnPosition)
+	private EnemyInfo enemyInfo;
+	public void Init(EnemyInfo enemyInfo, Vector3 spawnPosition, int sortingOrder)
 	{
+		_rotation = Random.value > 0.5f ? Vector3.forward : Vector3.back;
 		this.enemyInfo = enemyInfo;
 		hitpoints = enemyInfo.health;
 		_unselectableOfflineCount = enemyInfo.unselectableOfflineCount;
@@ -206,12 +222,17 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 		_healthList = GetComponentsInChildren<Health>();
 
+		for (int i = 0; i < _spriteRenderers.Length; i++)
+		{
+			_spriteRenderers[i].sortingOrder = i == 0 ? sortingOrder : i == 2 ? sortingOrder + 3 : sortingOrder + 2;
+		}
+
 		ChangeColor();
 		SetSelectable(true);
 		SpawnSequence(spawnPosition);
 	}
 
-	protected IEnumerator _changeColourCoroutine;
+	private IEnumerator _changeColourCoroutine;
 	public void StartChangeColor()
 	{
 		SetSelectable();
@@ -223,7 +244,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 			movePattern.Move();
 	}
 
-	protected void StopColorChange()
+	private void StopColorChange()
 	{
 		if (_changeColourCoroutine != null)
 			StopCoroutine(_changeColourCoroutine);
@@ -232,7 +253,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 			movePattern.Pause();
 	}
 
-	protected IEnumerator ChangeColorCoroutine()
+	private IEnumerator ChangeColorCoroutine()
 	{
 		while(true)
 		{
@@ -252,7 +273,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 		offline = false;
 		StartChangeColor();
-		SetSelectable();
+		//SetSelectable(true);
 		LeanTween.scale(myGO, Vector3.one, 0.25f);
 	}
 
@@ -269,24 +290,32 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		StopColorChange();
 
 		LeanTween.scale(myGO, Vector3.one * 0.8f, 0.25f);
-		if (_reboot != null)
-			_reboot.Activate();
+		//if (_reboot != null)
+		//	_reboot.Activate();
 	}
 
-	protected void ChangeColor()
+	private void ChangeColor()
 	{
 		ChangeColor(_colors[_colorIndex]);
 	}
 
-	protected void ChangeColor(Color color)
+	private void ChangeColor(Color color)
 	{
+		//for (int i = 0; i < _spriteRenderers.Length; i++)
+		//{
+		//	if (!_selectableCollider.enabled)
+		//		_spriteRenderers[i].color = Color.black;
+		//	else
+		//		_spriteRenderers[i].color = color;
+
+		//}
 		_mySpriteRenderer.color = color;
 	}
 
 	public void ApplyDamage()
 	{
-		if (_reboot != null)
-			_reboot.Stop();
+		//if (_reboot != null)
+		//	_reboot.Stop();
 
 		hitpoints--;
 		if (isDead)
@@ -350,7 +379,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		ToggleSelectable(selectable);
 	}
 
-	private void SetSelectable(bool force)
+	public void SetSelectable(bool force)
 	{
 		ToggleSelectable(selectable, force);
 	}
@@ -365,8 +394,12 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		if (offline && !force)
 			return;
 
+		if (_selectableCollider.enabled == sel)
+			return;
+
 		_blockerGO.SetActive(!sel);
 		_selectableCollider.enabled = sel;
+		ChangeColor();
 	}
 
 	void IInGameInteractable.Interact()
@@ -378,6 +411,6 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	private void Update()
 	{
 		if (!offline)
-			_myTF.Rotate(Vector3.forward, Time.deltaTime * _rotateSpeed);
+			_myTF.Rotate(_rotation, Time.deltaTime * _rotateSpeed);
 	}
 }

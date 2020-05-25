@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour
 	const string PREFS_CHECK_POINT = "prefsCheckPoint";
 	const int CHECK_POINT_EVERY_LEVEL = 3;
 	public static event UnityAction<int> levelUpdatedEvent;
+	private int _spriteSortingCounter = 0;
 
 	[SerializeField] private List<Level> _levels = new List<Level>();
 	[SerializeField] private int _loadTestLevel = -1;
@@ -82,6 +83,7 @@ public class LevelManager : MonoBehaviour
     public static void ResetLevel()
 	{
 		level = checkPointLevel;
+		instance.ResetSortingCounter();
     }
 
 	private void InvokeStateToGame(StateManager.State gameState)
@@ -90,6 +92,11 @@ public class LevelManager : MonoBehaviour
 			return;
 
 		LoadLevel();
+	}
+
+	private void ResetSortingCounter()
+	{
+		_spriteSortingCounter = 0;
 	}
 
 	private void Update()
@@ -141,7 +148,6 @@ public class LevelManager : MonoBehaviour
 			{
 				for (int j = 0; j < 3; j++)
 				{
-
 					enemyToSpawnList.Add(new EnemyInfo()
 					{
 						health = 1,
@@ -202,7 +208,7 @@ public class LevelManager : MonoBehaviour
 			{
 				for (int j = 0; j < enemyToSpawnList.Count; j++)
 				{
-					if (enemyToSpawnList[j].unselectableOfflineCount <= 0)
+					if (enemyToSpawnList[j].unselectableOfflineCount < 0)
 					{
 						if (unselectableCtr >= 3)
 							unselectableCtr = 0;
@@ -235,12 +241,14 @@ public class LevelManager : MonoBehaviour
 			}
 		}
 
+		ResetSortingCounter();
+
 		List<Vector2> availSpawnPosList = new List<Vector2>(_spawnPositionList);
 		for (int j = 0; j < enemyToSpawnList.Count; j++)
 		{
 			Vector2 spawnPos = availSpawnPosList[Random.Range(0, availSpawnPosList.Count)];
 			availSpawnPosList.Remove(spawnPos);
-			EnemyAssembler.instance.Spawn(enemyToSpawnList[j], spawnPos);
+			EnemyAssembler.instance.Spawn(enemyToSpawnList[j], spawnPos, _spriteSortingCounter++ * 3);
 		}
 	}
 
@@ -312,10 +320,21 @@ public class LevelManager : MonoBehaviour
             for (int i = 0; i < enemyInfoList.Count; i++)
             {
 				int rndIndex = Random.Range(0, availSpawnPosList.Count);
-				EnemyAssembler.instance.Spawn(enemyInfoList[i], availSpawnPosList[rndIndex]);
+				EnemyAssembler.instance.Spawn(enemyInfoList[i], availSpawnPosList[rndIndex], _spriteSortingCounter++ * 3);
 				availSpawnPosList.Remove(availSpawnPosList[rndIndex]);
             }
             
+		}
+	}
+
+	private static LevelManager _instance;
+	public static LevelManager instance
+	{
+		get
+		{
+			if (_instance == null)
+				_instance = FindObjectOfType<LevelManager>();
+			return _instance;
 		}
 	}
 }
