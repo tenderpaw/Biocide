@@ -40,6 +40,7 @@ public static class EnemyManager
 
 	public static void ForceVictory()
 	{
+		MatchManager.ClearSelected();
 		DestroyAll();
 		if (spawnedList.Count <= 0)
 			enemiesClearedEvent?.Invoke();

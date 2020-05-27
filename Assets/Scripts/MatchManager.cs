@@ -101,6 +101,11 @@ public class MatchManager : MonoBehaviour
 		matchClearedEvent?.Invoke();
 	}
 
+	public static void ClearSelected()
+	{
+		instance._selectedRobots.Clear();
+	}
+
 	private void RobotInvokeOnline(Robot robot)
 	{
 		if (_selectedRobots.Contains(robot))
