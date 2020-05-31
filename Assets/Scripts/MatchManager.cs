@@ -78,7 +78,7 @@ public class MatchManager : MonoBehaviour
 			} 
 			else if (matchCleared)
 			{
-				robotsToCompare[i].ApplyDamage();
+				robotsToCompare[i].Hurt();
 
 			}
 		}

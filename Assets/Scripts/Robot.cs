@@ -312,18 +312,21 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		//_mySpriteRenderer.color = color;
 	}
 
-	public void ApplyDamage()
+	public void Hurt()
 	{
-		//if (_reboot != null)
-		//	_reboot.Stop();
+		Shake(ApplyDamage);
+	}
 
+	private void ApplyDamage()
+	{
 		hitpoints--;
 		if (isDead)
 		{
 			destroyedEvent?.Invoke(this);
 			DeathSequence();
 
-		} else
+		}
+		else
 		{
 			for (int i = 0; i < _healthList.Length; i++)
 			{
@@ -400,6 +403,19 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		_blockerGO.SetActive(!sel);
 		_selectableCollider.enabled = sel;
 		ChangeColor();
+	}
+
+	private void Shake(UnityAction callBack = null)
+	{
+		Vector3 pos = _myTF.position;
+		Vector3 shakePos = new Vector3(0.1f, 0, 0);
+		LTSeq tweenSeq = LeanTween.sequence();
+		tweenSeq.append(LeanTween.move(myGO, pos + shakePos, 0.1f).setEase(LeanTweenType.easeShake));
+		tweenSeq.append(LeanTween.move(myGO, pos, 0.1f).setEase(LeanTweenType.easeShake));
+		tweenSeq.append(() =>
+		{
+			callBack?.Invoke();
+		});
 	}
 
 	void IInGameInteractable.Interact()
