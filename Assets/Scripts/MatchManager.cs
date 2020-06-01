@@ -79,7 +79,8 @@ public class MatchManager : MonoBehaviour
 			else if (matchCleared)
 			{
 				robotsToCompare[i].Hurt();
-
+				if (robotsToCompare[i].isDead)
+					EnemyManager.Remove(robotsToCompare[i]);
 			}
 		}
 

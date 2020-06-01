@@ -9,7 +9,6 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	public static event UnityAction<Robot> onlineEvent;
 	public static event UnityAction<Robot> offlineEvent;
-	public static event UnityAction<Robot> destroyedEvent;
 
 	#endregion
 
@@ -133,6 +132,8 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		}
 	}
 
+	private int _spriteOrderIndex;
+
 	private SpriteRenderer[] _sRenderers;
 	private SpriteRenderer[] _spriteRenderers
 	{
@@ -204,6 +205,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 	private EnemyInfo enemyInfo;
 	public void Init(EnemyInfo enemyInfo, Vector3 spawnPosition, int sortingOrder)
 	{
+		_spriteOrderIndex = sortingOrder;
 		_rotation = Random.value > 0.5f ? Vector3.forward : Vector3.back;
 		this.enemyInfo = enemyInfo;
 		hitpoints = enemyInfo.health;
@@ -222,11 +224,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 		_healthList = GetComponentsInChildren<Health>();
 
-		for (int i = 0; i < _spriteRenderers.Length; i++)
-		{
-			_spriteRenderers[i].sortingOrder = i == 0 ? sortingOrder : i == 2 ? sortingOrder + 3 : sortingOrder + 2;
-		}
-
+		SetOrtingOrder(_spriteOrderIndex);
 		ChangeColor();
 		SetSelectable(true);
 		SpawnSequence(spawnPosition);
@@ -271,6 +269,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		if (broadcast)
 			onlineEvent?.Invoke(this);
 
+		SetOrtingOrder(_spriteOrderIndex);
 		offline = false;
 		StartChangeColor();
 		//SetSelectable(true);
@@ -285,6 +284,7 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		if (broadcast)
 			offlineEvent?.Invoke(this);
 
+		SetOrtingOrder();
 		offline = true;
 		SetSelectable();
 		StopColorChange();
@@ -292,6 +292,14 @@ public class Robot : MonoBehaviour, IInGameInteractable
 		LeanTween.scale(myGO, Vector3.one * 0.8f, 0.25f);
 		//if (_reboot != null)
 		//	_reboot.Activate();
+	}
+
+	private void SetOrtingOrder(int sortingOrder = 0)
+	{
+		for (int i = 0; i < _spriteRenderers.Length; i++)
+		{
+			_spriteRenderers[i].sortingOrder = i == 0 ? sortingOrder : i == 2 ? sortingOrder + 3 : sortingOrder + 2;
+		}
 	}
 
 	private void ChangeColor()
@@ -314,17 +322,15 @@ public class Robot : MonoBehaviour, IInGameInteractable
 
 	public void Hurt()
 	{
+		hitpoints--;
 		Shake(ApplyDamage);
 	}
 
 	private void ApplyDamage()
 	{
-		hitpoints--;
 		if (isDead)
 		{
-			destroyedEvent?.Invoke(this);
 			DeathSequence();
-
 		}
 		else
 		{

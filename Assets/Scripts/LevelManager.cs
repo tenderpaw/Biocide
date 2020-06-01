@@ -256,6 +256,7 @@ public class LevelManager : MonoBehaviour
 	{
 		int count = EnemyManager.spawnedList.Count;
 		List<EnemyInfo> enemyInfoList = new List<EnemyInfo>();
+		// Only 1 remaining enemy
 		if (count == 1)
 		{
 			for (int i = 0; i < 2; i++)
@@ -267,8 +268,11 @@ public class LevelManager : MonoBehaviour
 				});
 			}
 		}
+
+		// 2 remaining enemies
 		else if (count == 2)
 		{
+			// If 2 remaining have same Hitpoints create the 3rd enemy with the same Hitpoints
 			if (EnemyManager.spawnedList[0].hitpoints == EnemyManager.spawnedList[1].hitpoints)
 			{
 				enemyInfoList.Add(new EnemyInfo()
@@ -278,6 +282,8 @@ public class LevelManager : MonoBehaviour
 				});
 
 			}
+
+			// If 1 of the remaining enemy has 2 Hitpoints and the other has 1 Hitpoint spawn 3 enemies with 1 Hitpoint
 			else if ((EnemyManager.spawnedList[0].hitpoints == 2 && EnemyManager.spawnedList[1].hitpoints == 1) ||
                 (EnemyManager.spawnedList[0].hitpoints == 1 && EnemyManager.spawnedList[1].hitpoints == 2))
 			{
@@ -290,6 +296,8 @@ public class LevelManager : MonoBehaviour
 					});
 				}
 			}
+
+			// If the 1 of the remaining enemy has 3 Hitpoints and the other has 2 Hitpoints
 			else if ((EnemyManager.spawnedList[0].hitpoints == 3 && EnemyManager.spawnedList[1].hitpoints == 2) ||
                 (EnemyManager.spawnedList[0].hitpoints == 2 && EnemyManager.spawnedList[1].hitpoints == 3))
 			{
