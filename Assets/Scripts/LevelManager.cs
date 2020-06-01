@@ -257,6 +257,7 @@ public class LevelManager : MonoBehaviour
 		int count = EnemyManager.spawnedList.Count;
 		List<EnemyInfo> enemyInfoList = new List<EnemyInfo>();
 		// Only 1 remaining enemy
+		// Set current to 1 HP then create 2 clones
 		if (count == 1)
 		{
 			for (int i = 0; i < 2; i++)
@@ -283,6 +284,7 @@ public class LevelManager : MonoBehaviour
 
 			}
 
+			// Set Highest HP to 1 then clone it x times, make sure add movement to the clones
 			// If 1 of the remaining enemy has 2 Hitpoints and the other has 1 Hitpoint spawn 3 enemies with 1 Hitpoint
 			else if ((EnemyManager.spawnedList[0].hitpoints == 2 && EnemyManager.spawnedList[1].hitpoints == 1) ||
                 (EnemyManager.spawnedList[0].hitpoints == 1 && EnemyManager.spawnedList[1].hitpoints == 2))
